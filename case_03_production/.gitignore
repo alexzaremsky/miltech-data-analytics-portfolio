@@ -1,0 +1,24 @@
+# =============================================================================
+# MilTech Data Analytics Portfolio - Standard .gitignore (Case 03)
+# =============================================================================
+
+# 1. Data directories and raw exports (index.html is self-contained client-side)
+data/
+*.csv
+*.zip
+*.tar.gz
+*.parquet
+*.json
+
+# 2. Presentation source (PDF is distributed as primary release format)
+*.pptx
+
+# 3. Python environment & OS temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+*.tmp
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
+*.bak

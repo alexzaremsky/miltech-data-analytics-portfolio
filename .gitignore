@@ -1,0 +1,26 @@
+# Data files
+*.csv
+*.parquet
+*.xlsx
+*.zip
+*.tar.gz
+data/
+
+# Presentation sources
+*.pptx
+
+# Python & caches
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Private notes
+*INTERNAL_NOTES*
+*CHEAT_SHEET*

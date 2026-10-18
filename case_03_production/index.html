@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case 03: Defense Production Analytics (2022-2025) | Alex Zaremsky</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-card-alt: #F1F5F9;
+            --border-color: #E2E8F0;
+            --border-hover: #CBD5E1;
+            --text-main: #0F172A;
+            --text-body: #334155;
+            --text-muted: #64748B;
+            --accent-blue: #0284C7;
+            --accent-cyan: #0891B2;
+            --accent-red: #E11D48;
+            --accent-amber: #D97706;
+            --accent-green: #16A34A;
+            --accent-purple: #7C3AED;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -1px rgba(0,0,0,0.04);
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 24px;
+        }
+        .container { max-width: 1440px; margin: 0 auto; }
+        
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header-title-box h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.02em;
+        }
+        .header-title-box p {
+            font-size: 13.5px;
+            color: var(--accent-blue);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .badge-cyan { background: #E0F2FE; color: var(--accent-cyan); border: 1px solid #BAE6FD; }
+        .badge-amber { background: #FEF3C7; color: var(--accent-amber); border: 1px solid #FDE68A; }
+        .badge-green { background: #DCFCE7; color: var(--accent-green); border: 1px solid #BBF7D0; }
+        
+        /* SCORECARDS GRID */
+        .scorecards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .card-header {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .card-number {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.15;
+            text-align: center;
+            margin-bottom: 8px;
+            font-feature-settings: "tnum";
+            letter-spacing: -0.02em;
+        }
+        .c-blue { color: var(--accent-blue); }
+        .c-green { color: var(--accent-green); }
+        .c-amber { color: var(--accent-amber); }
+        .c-red { color: var(--accent-red); }
+        .c-cyan { color: var(--accent-cyan); }
+        .c-purple { color: var(--accent-purple); }
+        
+        .card-desc {
+            font-size: 11.5px;
+            color: var(--text-body);
+            line-height: 1.45;
+            border-top: 1px solid var(--border-color);
+            padding-top: 8px;
+        }
+        
+        /* MAIN CHARTS SECTION */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 1024px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+        .chart-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .chart-header h3 {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        /* SIMULATOR SECTION */
+        .sim-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        .sim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .sim-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 900px) {
+            .sim-grid { grid-template-columns: 1fr; }
+        }
+        .sim-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .control-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-body);
+        }
+        .control-val {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-blue);
+            font-weight: 700;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            outline: none;
+            accent-color: var(--accent-blue);
+        }
+        .sim-results-card {
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .sim-kpi-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .sim-kpi-box {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .sim-kpi-box span {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .sim-kpi-box h4 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+        .bottleneck-box {
+            background: #FFFFFF;
+            border-left: 4px solid var(--accent-amber);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            color: var(--text-body);
+            line-height: 1.45;
+        }
+        .bottleneck-box strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        /* TABLE SECTION */
+        .table-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .search-box input {
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            width: 280px;
+            background: var(--bg-primary);
+        }
+        .search-box input:focus {
+            border-color: var(--accent-blue);
+            background: #FFFFFF;
+        }
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .filter-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #FFFFFF;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-body);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .filter-btn.active {
+            background: var(--accent-blue);
+            color: #FFFFFF;
+            border-color: var(--accent-blue);
+        }
+        .table-container {
+            overflow-x: auto;
+            max-height: 480px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            text-align: left;
+        }
+        thead th {
+            background: var(--bg-card-alt);
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 10px 14px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.1s ease;
+        }
+        tbody tr:hover {
+            background: #F1F5F9;
+        }
+        tbody td {
+            padding: 10px 14px;
+            color: var(--text-body);
+        }
+        .tier-pill {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10.5px;
+            font-weight: 700;
+        }
+        .tp-tier1 { background: #E0F2FE; color: var(--accent-blue); }
+        .tp-tier2 { background: #ECFDF5; color: var(--accent-green); }
+        .tp-tier3 { background: #FEF3C7; color: var(--accent-amber); }
+        
+        /* FOOTER */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-title-box">
+                <h1>🛡️ Case 03: Defense Production & Manufacturing Analytics</h1>
+                <p>Аналіз пропускної здатності (Throughput), аритмічності постачань, ешелонів Tier 1-3 та вузьких місць збирання ОВТ (2022-2025)</p>
+            </div>
+            <div class="header-meta">
+                <span class="badge badge-cyan">Prozorro 384,291 Tenders</span>
+                <span class="badge badge-green">TLP:WHITE</span>
+                <span class="badge badge-amber">Choice31 Portfolio</span>
+            </div>
+        </header>
+
+        <!-- SCORECARDS (6 KEY METRICS) -->
+        <div class="scorecards-grid">
+            <div class="card">
+                <div class="card-header">Валовий випуск ОВТ</div>
+                <div class="card-number c-blue">2.56M шт</div>
+                <div class="card-desc">
+                    <strong>56.06 млрд грн</strong> сукупних контрактів (БпЛА 2.52M шт, РЕБ 42.3k шт). Масштабування у 400+ разів.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Зростання партії (Batch)</div>
+                <div class="card-number c-green">+34.5x</div>
+                <div class="card-desc">
+                    Медіанний розмір партії зріс з <strong>2.0 шт</strong> (2022) до <strong>69.0 шт</strong> (2025). P90 сягнув 553 шт.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Частка ешелону Tier 1</div>
+                <div class="card-number c-amber">76.7%</div>
+                <div class="card-desc">
+                    <strong>44 серійні заводи</strong> (>10k шт) виробили 1.96M одиниць (68.8% вартості ринку).
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Коефіцієнт аритмії</div>
+                <div class="card-number c-red">4.04x</div>
+                <div class="card-desc">
+                    Груднева штурмівщина перевищує січень у 4 рази. <strong>30.52 млрд грн</strong> контрактується за 1 місяць.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Буфер безпеки P90</div>
+                <div class="card-number c-cyan">+8.9 дн</div>
+                <div class="card-desc">
+                    P50 строк становить <strong>6.0 дн</strong>, але хвостовий P90 сягає <strong>14.8 дн</strong> (+148.4% розрив).
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Зриви процедур БпЛА</div>
+                <div class="card-number c-purple">9.78%</div>
+                <div class="card-desc">
+                    Найвищий рівень зриву торгів серед усіх видів ОВТ через жорсткі ТЗ та дефіцит імпортних чіпів.
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS SECTION -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Річний темп фізичного випуску ОВТ (тис. шт)</h3>
+                    <span class="badge badge-cyan">Throughput</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartThroughput"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Щомісячна аритмічність контрактації (млрд грн)</h3>
+                    <span class="badge badge-amber">Seasonality</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartRhythmicity"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Внесок ешелонів Tier 1, Tier 2, Tier 3 (%)</h3>
+                    <span class="badge badge-green">Capacity Tiers</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartTiers"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Внесок етапів у загальні затримки випуску (%)</h3>
+                    <span class="badge badge-cyan">Bottlenecks</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartBottlenecks"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- LINE BALANCING & CAPACITY SIMULATOR -->
+        <div class="sim-section">
+            <div class="sim-header">
+                <h2>⚙️ Інтерактивний симулятор пропускної здатності та балансування лінії (Line Balancing Simulator)</h2>
+                <span class="badge badge-cyan">COO Tactical Sandbox</span>
+            </div>
+            <div class="sim-grid">
+                <div class="sim-controls">
+                    <div class="control-group">
+                        <div class="control-label-row">
+                            <span>Кількість змін на добу (Shifts / Day)</span>
+                            <span class="control-val" id="valShifts">2 зміни (16 год)</span>
+                        </div>
+                        <input type="range" id="inputShifts" min="1" max="3" step="1" value="2">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label-row">
+                            <span>Кількість паралельних постів збирання (Workstations)</span>
+                            <span class="control-val" id="valWorkstations">20 постів</span>
+                        </div>
+                        <input type="range" id="inputWorkstations" min="5" max="60" step="5" value="20">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label-row">
+                            <span>Такт збирання 1 виробу на посту (Takt Time, хв)</span>
+                            <span class="control-val" id="valTakt">30 хв / борт</span>
+                        </div>
+                        <input type="range" id="inputTakt" min="15" max="60" step="5" value="30">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label-row">
+                            <span>Буфер безпеки імпортних комплектуючих (Safety Buffer, днів)</span>
+                            <span class="control-val" id="valBuffer">20 днів запасу</span>
+                        </div>
+                        <input type="range" id="inputBuffer" min="0" max="60" step="5" value="20">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label-row">
+                            <span>Рівень внутрішньоцехового браку (Scrap / Defect Rate)</span>
+                            <span class="control-val" id="valScrap">2.5%</span>
+                        </div>
+                        <input type="range" id="inputScrap" min="0.5" max="8.0" step="0.5" value="2.5">
+                    </div>
+                </div>
+
+                <div class="sim-results-card">
+                    <div>
+                        <div class="sim-kpi-row">
+                            <div class="sim-kpi-box">
+                                <span>Щомісячний випуск</span>
+                                <h4 class="c-blue" id="simMonthlyUnits">13,728 шт</h4>
+                            </div>
+                            <div class="sim-kpi-box">
+                                <span>Річний Run-Rate</span>
+                                <h4 class="c-green" id="simAnnualUnits">164.7k шт</h4>
+                            </div>
+                        </div>
+
+                        <div class="sim-kpi-row">
+                            <div class="sim-kpi-box">
+                                <span>Завантаження ліній</span>
+                                <h4 class="c-cyan" id="simEfficiency">92.4%</h4>
+                            </div>
+                            <div class="sim-kpi-box">
+                                <span>Контрактна спроможність</span>
+                                <h4 class="c-purple" id="simValueCapacity">2.96 млрд грн</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bottleneck-box" id="simBottleneckMessage">
+                        <strong>Стан балансування конвеєра:</strong>
+                        Лінії збалансовані. Безпековий буфер компонентів (20 днів) гарантує безперебійне постачання без простоїв монтажників.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MANUFACTURERS REGISTRY TABLE -->
+        <div class="table-section">
+            <div class="table-toolbar">
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 700;">Реєстр виробників ОВТ за виробничими ешелонами (2022-2025)</h3>
+                    <p style="font-size: 12px; color: var(--text-muted);">Виробничі лідери за ешелонами Tier 1, Tier 2 та Tier 3 (відсортовано за фізичним випуском у штуках)</p>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterTier('Tier 1', this)">Tier 1: Промислові заводи (>10k шт · 44)</button>
+                        <button class="filter-btn" onclick="filterTier('Tier 2', this)">Tier 2: Серійні виробники (1k-10k шт · Топ-50)</button>
+                        <button class="filter-btn" onclick="filterTier('Tier 3', this)">Tier 3: SME / R&amp;D майстерні (<1k шт · Топ-50)</button>
+                    </div>
+                    <div class="search-box">
+                        <input type="text" id="tableSearch" placeholder="Пошук за назвою або ЄДРПОУ..." oninput="searchTable()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="manufacturersTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ЄДРПОУ</th>
+                            <th>Виробник / Постачальник</th>
+                            <th>Регіон</th>
+                            <th>Фізичний випуск (шт)</th>
+                            <th>БпЛА (шт)</th>
+                            <th>РЕБ (шт)</th>
+                            <th>Сума (млн грн)</th>
+                            <th>Контрактів</th>
+                            <th>Ешелон</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <div>
+                <strong>MilTech Data Analytics Portfolio</strong>  •  Автор: Alex Zaremsky  •  Кейс 03: Виробнича аналітика
+            </div>
+            <div>
+                <a href="presentation.pdf" target="_blank">📄 Презентація (PDF)</a>  •  
+                <a href="README.md" target="_blank">📖 Детальний звіт (10 блоків)</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const M = {"headline": {"total_equip_units": 2560707, "total_uav_units": 2518363, "total_ew_units": 42344, "total_equip_val_bln": 56.06, "total_uav_val_bln": 50.24, "total_ew_val_bln": 5.82, "total_manufacturers": 2461, "tier1_manufacturers": 44, "tier1_volume_pct": 76.7, "tier1_value_pct": 68.8, "median_batch_2022": 2.0, "median_batch_2025": 69.0, "batch_growth_factor": 34.5, "dec_jan_spending_ratio": 4.04, "lead_p50_days": 5.96731815849537, "lead_p90_days": 14.819929971601853, "buffer_days": 8.9, "buffer_pct": 148.4, "uav_failure_rate_pct": 9.78}, "rq1_throughput": {"yearly_uav": [{"year": 2022, "contracts": 163, "units": 4052, "val_bln": 0.34284874463, "batch_p25": 1.0, "batch_p50": 2.0, "batch_p75": 12.5, "batch_p90": 63.80000000000007, "batch_max": 592, "avg_unit_cost": 79202.01997900558}, {"year": 2023, "contracts": 1974, "units": 76340, "val_bln": 2.66845132295, "batch_p25": 4.0, "batch_p50": 11.0, "batch_p75": 33.0, "batch_p90": 86.0, "batch_max": 1831, "avg_unit_cost": 34258.02661679276}, {"year": 2024, "contracts": 4933, "units": 837490, "val_bln": 18.42318339464, "batch_p25": 9.0, "batch_p50": 25.0, "batch_p75": 85.0, "batch_p90": 251.80000000000018, "batch_max": 104545, "avg_unit_cost": 21912.56922742519}, {"year": 2025, "contracts": 5572, "units": 1600481, "val_bln": 28.8069247275, "batch_p25": 17.0, "batch_p50": 69.0, "batch_p75": 231.0, "batch_p90": 552.9000000000005, "batch_max": 27444, "avg_unit_cost": 17925.465746474747}], "yearly_ew": [{"year": 2022, "contracts": 65, "units": 287, "val_bln": 0.06127423398, "batch_p50": 1.0, "batch_p90": 5.200000000000003, "batch_max": 99}, {"year": 2023, "contracts": 335, "units": 2437, "val_bln": 0.45034964993000004, "batch_p50": 2.0, "batch_p90": 17.600000000000023, "batch_max": 189}, {"year": 2024, "contracts": 2155, "units": 15282, "val_bln": 2.2889186581000005, "batch_p50": 3.0, "batch_p90": 12.0, "batch_max": 458}, {"year": 2025, "contracts": 2615, "units": 24338, "val_bln": 3.0184695855699997, "batch_p50": 3.0, "batch_p90": 18.0, "batch_max": 671}], "monthly_run_rate": [{"year": 2022, "month": 1, "period_ym": "2022-01", "units": 2, "val_mln": 0.024739, "contracts": 2}, {"year": 2022, "month": 2, "period_ym": "2022-02", "units": 4, "val_mln": 0.12796, "contracts": 4}, {"year": 2022, "month": 3, "period_ym": "2022-03", "units": 9, "val_mln": 0.58130399, "contracts": 3}, {"year": 2022, "month": 4, "period_ym": "2022-04", "units": 2, "val_mln": 0.16, "contracts": 1}, {"year": 2022, "month": 5, "period_ym": "2022-05", "units": 5, "val_mln": 0.334198, "contracts": 4}, {"year": 2022, "month": 6, "period_ym": "2022-06", "units": 9, "val_mln": 0.655991, "contracts": 7}, {"year": 2022, "month": 7, "period_ym": "2022-07", "units": 194, "val_mln": 16.51195875, "contracts": 3}, {"year": 2022, "month": 8, "period_ym": "2022-08", "units": 819, "val_mln": 69.435474, "contracts": 8}, {"year": 2022, "month": 9, "period_ym": "2022-09", "units": 434, "val_mln": 36.90811578, "contracts": 23}, {"year": 2022, "month": 10, "period_ym": "2022-10", "units": 718, "val_mln": 60.80959148, "contracts": 32}, {"year": 2022, "month": 11, "period_ym": "2022-11", "units": 1049, "val_mln": 89.01366403, "contracts": 26}, {"year": 2022, "month": 12, "period_ym": "2022-12", "units": 807, "val_mln": 68.28574859999999, "contracts": 50}, {"year": 2023, "month": 1, "period_ym": "2023-01", "units": 1567, "val_mln": 54.828753, "contracts": 20}, {"year": 2023, "month": 2, "period_ym": "2023-02", "units": 1351, "val_mln": 47.23665346, "contracts": 39}, {"year": 2023, "month": 3, "period_ym": "2023-03", "units": 1992, "val_mln": 69.65409867, "contracts": 78}, {"year": 2023, "month": 4, "period_ym": "2023-04", "units": 5186, "val_mln": 181.42643074, "contracts": 107}, {"year": 2023, "month": 5, "period_ym": "2023-05", "units": 4280, "val_mln": 149.61019298000002, "contracts": 103}, {"year": 2023, "month": 6, "period_ym": "2023-06", "units": 5976, "val_mln": 209.04756407999997, "contracts": 99}, {"year": 2023, "month": 7, "period_ym": "2023-07", "units": 7220, "val_mln": 252.60807294, "contracts": 93}, {"year": 2023, "month": 8, "period_ym": "2023-08", "units": 5032, "val_mln": 175.86395274, "contracts": 163}, {"year": 2023, "month": 9, "period_ym": "2023-09", "units": 5652, "val_mln": 197.5017062, "contracts": 171}, {"year": 2023, "month": 10, "period_ym": "2023-10", "units": 8730, "val_mln": 304.46460673, "contracts": 261}, {"year": 2023, "month": 11, "period_ym": "2023-11", "units": 11399, "val_mln": 398.10334621000004, "contracts": 329}, {"year": 2023, "month": 12, "period_ym": "2023-12", "units": 17955, "val_mln": 628.1059452000001, "contracts": 511}, {"year": 2024, "month": 1, "period_ym": "2024-01", "units": 11593, "val_mln": 254.74083799000002, "contracts": 145}, {"year": 2024, "month": 2, "period_ym": "2024-02", "units": 24278, "val_mln": 533.98765964, "contracts": 295}, {"year": 2024, "month": 3, "period_ym": "2024-03", "units": 28307, "val_mln": 622.57687859, "contracts": 400}, {"year": 2024, "month": 4, "period_ym": "2024-04", "units": 69269, "val_mln": 1523.41595599, "contracts": 463}, {"year": 2024, "month": 5, "period_ym": "2024-05", "units": 118752, "val_mln": 2612.80355664, "contracts": 483}, {"year": 2024, "month": 6, "period_ym": "2024-06", "units": 68180, "val_mln": 1499.92013081, "contracts": 449}, {"year": 2024, "month": 7, "period_ym": "2024-07", "units": 34249, "val_mln": 753.30354829, "contracts": 355}, {"year": 2024, "month": 8, "period_ym": "2024-08", "units": 37892, "val_mln": 833.7288028400001, "contracts": 386}, {"year": 2024, "month": 9, "period_ym": "2024-09", "units": 32797, "val_mln": 721.5378596899999, "contracts": 360}, {"year": 2024, "month": 10, "period_ym": "2024-10", "units": 56579, "val_mln": 1244.5702543799998, "contracts": 436}, {"year": 2024, "month": 11, "period_ym": "2024-11", "units": 56890, "val_mln": 1251.42641635, "contracts": 545}, {"year": 2024, "month": 12, "period_ym": "2024-12", "units": 298704, "val_mln": 6571.171493429999, "contracts": 616}, {"year": 2025, "month": 1, "period_ym": "2025-01", "units": 170896, "val_mln": 3076.1833568800002, "contracts": 236}, {"year": 2025, "month": 2, "period_ym": "2025-02", "units": 133502, "val_mln": 2403.18704314, "contracts": 413}, {"year": 2025, "month": 3, "period_ym": "2025-03", "units": 85085, "val_mln": 1531.47132198, "contracts": 447}, {"year": 2025, "month": 4, "period_ym": "2025-04", "units": 105842, "val_mln": 1905.0584714200002, "contracts": 484}, {"year": 2025, "month": 5, "period_ym": "2025-05", "units": 164238, "val_mln": 2956.1951076799996, "contracts": 559}, {"year": 2025, "month": 6, "period_ym": "2025-06", "units": 107645, "val_mln": 1937.41399047, "contracts": 492}, {"year": 2025, "month": 7, "period_ym": "2025-07", "units": 101449, "val_mln": 1825.79036035, "contracts": 455}, {"year": 2025, "month": 8, "period_ym": "2025-08", "units": 101964, "val_mln": 1834.89725301, "contracts": 469}, {"year": 2025, "month": 9, "period_ym": "2025-09", "units": 136394, "val_mln": 2454.80370474, "contracts": 475}, {"year": 2025, "month": 10, "period_ym": "2025-10", "units": 120039, "val_mln": 2160.4724226900003, "contracts": 509}, {"year": 2025, "month": 11, "period_ym": "2025-11", "units": 65883, "val_mln": 1185.7931544999997, "contracts": 396}, {"year": 2025, "month": 12, "period_ym": "2025-12", "units": 307544, "val_mln": 5535.65854064, "contracts": 637}], "batch_dist_pct": {"2022": {"Industrial Mega (>1,000 шт)": 0.0, "Large Serial (251-1,000 шт)": 1.8, "Micro (1-10 шт)": 72.4, "Serial (51-250 шт)": 9.8, "Tactical (11-50 шт)": 16.0}, "2023": {"Industrial Mega (>1,000 шт)": 0.3, "Large Serial (251-1,000 шт)": 2.0, "Micro (1-10 шт)": 49.3, "Serial (51-250 шт)": 16.1, "Tactical (11-50 шт)": 32.3}, "2024": {"Industrial Mega (>1,000 шт)": 3.2, "Large Serial (251-1,000 шт)": 6.8, "Micro (1-10 шт)": 30.5, "Serial (51-250 шт)": 24.3, "Tactical (11-50 шт)": 35.1}, "2025": {"Industrial Mega (>1,000 шт)": 4.6, "Large Serial (251-1,000 шт)": 18.8, "Micro (1-10 шт)": 16.0, "Serial (51-250 шт)": 32.9, "Tactical (11-50 шт)": 27.8}}}, "rq2_rhythmicity": {"monthly_seasonality": [{"month": 1, "tenders": 14003, "val_bln": 7.5474345415199995, "equip_units": 184624, "equip_val_bln": 3.46465558718}, {"month": 2, "tenders": 25251, "val_bln": 8.11256435748, "equip_units": 161838, "equip_val_bln": 3.3420432951800003}, {"month": 3, "tenders": 27101, "val_bln": 7.638797833809999, "equip_units": 118055, "equip_val_bln": 2.56861422519}, {"month": 4, "tenders": 26396, "val_bln": 9.99530438774, "equip_units": 184433, "equip_val_bln": 4.16942969774}, {"month": 5, "tenders": 28855, "val_bln": 12.620082761334, "equip_units": 291666, "equip_val_bln": 6.31670401253}, {"month": 6, "tenders": 28405, "val_bln": 7.620091736728, "equip_units": 185020, "equip_val_bln": 4.1050246242}, {"month": 7, "tenders": 27435, "val_bln": 9.07067280869, "equip_units": 146161, "equip_val_bln": 3.27292725694}, {"month": 8, "tenders": 30866, "val_bln": 8.17008341727, "equip_units": 148366, "equip_val_bln": 3.2838837476}, {"month": 9, "tenders": 32607, "val_bln": 7.72337447263, "equip_units": 178641, "equip_val_bln": 3.8623117526099997}, {"month": 10, "tenders": 37510, "val_bln": 11.36899406092, "equip_units": 191382, "equip_val_bln": 4.49020754283}, {"month": 11, "tenders": 44627, "val_bln": 7.194813000440001, "equip_units": 139187, "equip_val_bln": 3.4697504831000003}, {"month": 12, "tenders": 61235, "val_bln": 30.520490383905997, "equip_units": 631334, "equip_val_bln": 13.714868092200001}], "quarterly_shares": {"2022": {"1": 11.0, "2": 9.9, "3": 16.0, "4": 63.2}, "2023": {"1": 11.5, "2": 23.2, "3": 34.5, "4": 30.8}, "2024": {"1": 10.5, "2": 29.2, "3": 15.1, "4": 45.2}, "2025": {"1": 25.3, "2": 21.3, "3": 19.7, "4": 33.8}}, "dec_jan_ratio": 4.04, "lead_time_quantiles": {"p50": 5.96731815849537, "p75": 11.183429110306713, "p90": 14.819929971601853, "buffer_days": 8.9, "buffer_pct": 148.4}}, "rq3_tiering": {"tier_summary": [{"tier": "Tier 1 (High-Scale: >10k шт)", "suppliers": 44, "units": 1964011, "val_bln": 38.55359500357999, "avg_units": 44636.61363636364, "median_units": 19870.5, "avg_contracts": 138.11363636363637, "suppliers_pct": 1.8, "units_pct": 76.7, "val_pct": 68.8}, {"tier": "Tier 2 (Mid-Scale: 1k-10k шт)", "suppliers": 129, "units": 437712, "val_bln": 11.25549483516, "avg_units": 3393.1162790697676, "median_units": 2651.0, "avg_contracts": 30.68217054263566, "suppliers_pct": 5.2, "units_pct": 17.1, "val_pct": 20.1}, {"tier": "Tier 3 (SME / Garage: <1k шт)", "suppliers": 2288, "units": 158984, "val_bln": 6.251330478560002, "avg_units": 69.48601398601399, "median_units": 10.0, "avg_contracts": 3.3990384615384617, "suppliers_pct": 93.0, "units_pct": 6.2, "val_pct": 11.2}], "top_manufacturers": [{"supplier_id": "Приховано", "supplier_name": "Приховано", "region": "Приховано", "total_units": 652423, "total_val_bln": 12.53, "contracts": 300, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "88888888", "supplier_name": "Оборонний постачальник", "region": "Не вказано", "total_units": 161829, "total_val_bln": 3.42, "contracts": 806, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "45079023", "supplier_name": "ТОВ \"Юнайтед Мілітарі Солюшнз\"", "region": "Не вказано", "total_units": 105077, "total_val_bln": 2.31, "contracts": 13, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "45627821", "supplier_name": "Товариство з обмеженою відповідальністю \"Флай системз сейлз\"", "region": "Не вказано", "total_units": 70541, "total_val_bln": 1.55, "contracts": 3, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "40265219", "supplier_name": "ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \"КАЛЬХЕОН\"", "region": "м. Київ", "total_units": 64108, "total_val_bln": 1.19, "contracts": 244, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "44905947", "supplier_name": "ПП БудКапітал Плюс", "region": "Житомирська область", "total_units": 61962, "total_val_bln": 1.12, "contracts": 185, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "45274055", "supplier_name": "ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \"УМО УКРАЇНА\"", "region": "м. Київ", "total_units": 55434, "total_val_bln": 1.04, "contracts": 216, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "44963443", "supplier_name": "ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \"АМТРІКС\"", "region": "м. Київ", "total_units": 49721, "total_val_bln": 0.96, "contracts": 243, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "3741011288", "supplier_name": "ФОП Манькова Анна Дмитрівна", "region": "Не вказано", "total_units": 48414, "total_val_bln": 1.07, "contracts": 3, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "45169719", "supplier_name": "ТОВ \"БУЛЛЕТ\"", "region": "м. Київ", "total_units": 43945, "total_val_bln": 0.85, "contracts": 346, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "45301675", "supplier_name": "ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \"СПЕЦПРИЛАД\"", "region": "Київська область", "total_units": 40111, "total_val_bln": 0.72, "contracts": 166, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "45589423", "supplier_name": "ТОВ \"ТЕХНОГЕН\"", "region": "Харківська область", "total_units": 38795, "total_val_bln": 0.7, "contracts": 90, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "3489715604", "supplier_name": "ФІЗИЧНА ОСОБА-ПІДПРИЄМЕЦЬ ОСТАПЕНКО АЛІНА СЕРГІЇВНА", "region": "Київська область", "total_units": 37464, "total_val_bln": 0.82, "contracts": 452, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "45359809", "supplier_name": "ТОВ \"ХАБИКС\"", "region": "Одеська область", "total_units": 32334, "total_val_bln": 0.62, "contracts": 366, "tier": "Tier 1 (High-Scale: >10k шт)"}, {"supplier_id": "39562922", "supplier_name": "ТОВ «УКРСПЕЦСИСТЕМС»", "region": "Не вказано", "total_units": 29826, "total_val_bln": 0.54, "contracts": 9, "tier": "Tier 1 (High-Scale: >10k шт)"}], "concentration": {"total_suppliers": 2461, "top_1_pct_count": 25, "top_1_pct_share": 66.9, "top_5_pct_count": 124, "top_5_pct_share": 91.1}}, "rq4_bottlenecks": {"fail_by_cat": [{"miltech_category": "БпЛА та Дрони (UAV / Drones)", "total_tenders": 12642, "failed_tenders": 1237, "total_val_bln": 50.24140818972, "fail_rate_pct": 9.78}, {"miltech_category": "Електроніка та Комплектуючі FPV (Components / Avionics)", "total_tenders": 256135, "failed_tenders": 3189, "total_val_bln": 23.057472069044, "fail_rate_pct": 1.25}, {"miltech_category": "Засекречені закупівлі ОВТ (Masked Military)", "total_tenders": 14522, "failed_tenders": 0, "total_val_bln": 0.32398059646, "fail_rate_pct": 0.0}, {"miltech_category": "Оборонне спорядження та Захист (Defense Gear)", "total_tenders": 70980, "failed_tenders": 938, "total_val_bln": 44.99135430984, "fail_rate_pct": 1.32}, {"miltech_category": "РЕБ, РЕР та Тактичні системи (EW / Tactical)", "total_tenders": 5170, "failed_tenders": 323, "total_val_bln": 5.81901212758, "fail_rate_pct": 6.25}, {"miltech_category": "Тактичний звʼязок та Антени (Comms / Antennas)", "total_tenders": 24842, "failed_tenders": 224, "total_val_bln": 3.149476469823999, "fail_rate_pct": 0.9}], "taxonomy": [{"stage": "1. Постачання імпортних компонентів (Avionics / Optics / ESC)", "delay_weight_pct": 42.0, "root_cause": "Експортний контроль Китаю, дефіцит оптики нічного бачення, логістика через треті країни", "impact_days": "+14.5 днів затримки"}, {"stage": "2. Балансування цехових ліній (Assembly Line Takt Time)", "delay_weight_pct": 24.0, "root_cause": "Дефіцит кваліфікованих монтажників SMD, ручне паяння, перекоси 1-ї та 2-ї змін", "impact_days": "+8.0 днів затримки"}, {"stage": "3. Полігонні випробування та Приймання (Range Trials & Acceptance)", "delay_weight_pct": 21.0, "root_cause": "Погодні умови, завантаження випробувальних центрів, регламент військового представництва", "impact_days": "+7.2 днів затримки"}, {"stage": "4. Оборонна бюрократія та Казначейство (Payment / Settlement)", "delay_weight_pct": 13.0, "root_cause": "Казначейські касові розриви наприкінці року, оформлення паспортів кінцевого споживача (EUC)", "impact_days": "+4.5 днів затримки"}]}, "top_50_manufacturers": [{"rank": 1, "supplier_id": "Приховано", "supplier_name": "Приховано", "region": "Приховано", "total_units": 652423, "total_val_mln": 12525.1, "contracts": 300, "uav_units": 652423, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 2, "supplier_id": "88888888", "supplier_name": "Оборонний постачальник", "region": "Не вказано", "total_units": 161829, "total_val_mln": 3416.5, "contracts": 806, "uav_units": 159162, "ew_units": 2667, "tier": "Tier 1 (>10k шт)"}, {"rank": 3, "supplier_id": "45079023", "supplier_name": "ТОВ \"Юнайтед Мілітарі Солюшнз\"", "region": "Не вказано", "total_units": 105077, "total_val_mln": 2310.8, "contracts": 13, "uav_units": 105077, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 4, "supplier_id": "45627821", "supplier_name": "ТОВ \"Флай системз сейлз\"", "region": "Не вказано", "total_units": 70541, "total_val_mln": 1551.9, "contracts": 3, "uav_units": 70541, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 5, "supplier_id": "40265219", "supplier_name": "ТОВ \"КАЛЬХЕОН\"", "region": "м. Київ", "total_units": 64108, "total_val_mln": 1187.6, "contracts": 244, "uav_units": 64108, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 6, "supplier_id": "44905947", "supplier_name": "ПП БудКапітал Плюс", "region": "Житомирська область", "total_units": 61962, "total_val_mln": 1115.4, "contracts": 185, "uav_units": 61962, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 7, "supplier_id": "45274055", "supplier_name": "ТОВ \"УМО УКРАЇНА\"", "region": "м. Київ", "total_units": 55434, "total_val_mln": 1037.1, "contracts": 216, "uav_units": 55434, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 8, "supplier_id": "44963443", "supplier_name": "ТОВ \"АМТРІКС\"", "region": "м. Київ", "total_units": 49721, "total_val_mln": 960.4, "contracts": 243, "uav_units": 49721, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 9, "supplier_id": "3741011288", "supplier_name": "ФОП Манькова Анна Дмитрівна", "region": "Не вказано", "total_units": 48414, "total_val_mln": 1065.1, "contracts": 3, "uav_units": 48414, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 10, "supplier_id": "45169719", "supplier_name": "ТОВ \"БУЛЛЕТ\"", "region": "м. Київ", "total_units": 43945, "total_val_mln": 847.3, "contracts": 346, "uav_units": 43945, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 11, "supplier_id": "45301675", "supplier_name": "ТОВ \"СПЕЦПРИЛАД\"", "region": "Київська область", "total_units": 40111, "total_val_mln": 722.0, "contracts": 166, "uav_units": 40111, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 12, "supplier_id": "45589423", "supplier_name": "ТОВ \"ТЕХНОГЕН\"", "region": "Харківська область", "total_units": 38795, "total_val_mln": 698.2, "contracts": 90, "uav_units": 38795, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 13, "supplier_id": "3489715604", "supplier_name": "ФОП ОСТАПЕНКО АЛІНА СЕРГІЇВНА", "region": "Київська область", "total_units": 37464, "total_val_mln": 815.3, "contracts": 452, "uav_units": 37464, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 14, "supplier_id": "45359809", "supplier_name": "ТОВ \"ХАБИКС\"", "region": "Одеська область", "total_units": 32334, "total_val_mln": 618.4, "contracts": 366, "uav_units": 32334, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 15, "supplier_id": "39562922", "supplier_name": "ТОВ «УКРСПЕЦСИСТЕМС»", "region": "Не вказано", "total_units": 29826, "total_val_mln": 542.9, "contracts": 9, "uav_units": 29826, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 16, "supplier_id": "44961755", "supplier_name": "ТОВ \"РОБОТІКС ДІСТРІБЬЮШН\"", "region": "м. Київ", "total_units": 26586, "total_val_mln": 484.5, "contracts": 212, "uav_units": 26586, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 17, "supplier_id": "45532377", "supplier_name": "ТОВ \"ВЕЛТОРС\"", "region": "Не вказано", "total_units": 24725, "total_val_mln": 453.4, "contracts": 88, "uav_units": 24724, "ew_units": 1, "tier": "Tier 1 (>10k шт)"}, {"rank": 18, "supplier_id": "45608697", "supplier_name": "ТОВ \"ГЕРТРОС\"", "region": "Не вказано", "total_units": 24164, "total_val_mln": 435.0, "contracts": 21, "uav_units": 24164, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 19, "supplier_id": "45479481", "supplier_name": "ТОВ \"ОПТОМАКС\"", "region": "Хмельницька область", "total_units": 23797, "total_val_mln": 454.8, "contracts": 120, "uav_units": 23797, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 20, "supplier_id": "45203623", "supplier_name": "ТОВ Комерс Еліт Солюшнс Груп", "region": "Житомирська область", "total_units": 21980, "total_val_mln": 409.1, "contracts": 121, "uav_units": 21980, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 21, "supplier_id": "44934082", "supplier_name": "ТОВ «Арсенал Патріота»", "region": "Київська область", "total_units": 21726, "total_val_mln": 391.0, "contracts": 112, "uav_units": 21726, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 22, "supplier_id": "45335238", "supplier_name": "ТОВ \"ДЖІА\"", "region": "Київська область", "total_units": 19887, "total_val_mln": 369.8, "contracts": 139, "uav_units": 19887, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 23, "supplier_id": "44904058", "supplier_name": "ТОВ «007М»", "region": "Закарпатська область", "total_units": 19854, "total_val_mln": 399.5, "contracts": 92, "uav_units": 19854, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 24, "supplier_id": "43950035", "supplier_name": "ТОВ \"АГЕНТСТВО ПРОДАЖУ АКТИВІВ\"", "region": "Одеська область", "total_units": 19510, "total_val_mln": 368.8, "contracts": 14, "uav_units": 19510, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 25, "supplier_id": "44975155", "supplier_name": "ТОВ \"ІНКАС ЮА\"", "region": "Київська область", "total_units": 19357, "total_val_mln": 363.0, "contracts": 158, "uav_units": 19357, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 26, "supplier_id": "40006469", "supplier_name": "ТОВ «Виробничо-інноваційна компанія «ДЕВІРО»", "region": "Не вказано", "total_units": 18399, "total_val_mln": 383.0, "contracts": 16, "uav_units": 18399, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 27, "supplier_id": "45186404", "supplier_name": "ТОВ \"ВИРІЙ ІНДАСТРІ\"", "region": "Київська область", "total_units": 16973, "total_val_mln": 333.1, "contracts": 75, "uav_units": 16973, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 28, "supplier_id": "39951406", "supplier_name": "ТОВ \"М-АГРО\"", "region": "Київська область", "total_units": 16373, "total_val_mln": 317.8, "contracts": 197, "uav_units": 16373, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 29, "supplier_id": "45390409", "supplier_name": "ТОВ \"МІНВІК\"", "region": "Одеська область", "total_units": 15601, "total_val_mln": 365.0, "contracts": 211, "uav_units": 15415, "ew_units": 186, "tier": "Tier 1 (>10k шт)"}, {"rank": 30, "supplier_id": "45512853", "supplier_name": "ТОВ \"СЕЙЛКОМТРЕЙД\"", "region": "м. Київ", "total_units": 14961, "total_val_mln": 269.2, "contracts": 48, "uav_units": 14961, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 31, "supplier_id": "45558840", "supplier_name": "ТОВ «СКАЙХАБ»", "region": "Не вказано", "total_units": 14928, "total_val_mln": 268.7, "contracts": 42, "uav_units": 14928, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 32, "supplier_id": "45611914", "supplier_name": "ТОВ \"Л енд Т компані\"", "region": "м. Київ", "total_units": 14403, "total_val_mln": 277.7, "contracts": 155, "uav_units": 14403, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 33, "supplier_id": "40198290", "supplier_name": "ТОВ \"ВАВІЛОН-ГРУП\"", "region": "м. Київ", "total_units": 13183, "total_val_mln": 253.4, "contracts": 66, "uav_units": 13183, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 34, "supplier_id": "42855563", "supplier_name": "ТОВ\"ТЕХНОПРОФ\"", "region": "м. Київ", "total_units": 13082, "total_val_mln": 267.4, "contracts": 51, "uav_units": 13082, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 35, "supplier_id": "41071921", "supplier_name": "ТОВ \"ГРУП ІНТРЕЙД\"", "region": "Дніпропетровська область", "total_units": 12547, "total_val_mln": 315.5, "contracts": 243, "uav_units": 12489, "ew_units": 58, "tier": "Tier 1 (>10k шт)"}, {"rank": 36, "supplier_id": "45208113", "supplier_name": "ТОВ \"Центр досліджень безпілотних систем\"", "region": "Київська область", "total_units": 12008, "total_val_mln": 230.6, "contracts": 45, "uav_units": 12008, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 37, "supplier_id": "44415668", "supplier_name": "ТОВ \"АРТАІР\"", "region": "м. Київ", "total_units": 11974, "total_val_mln": 277.8, "contracts": 78, "uav_units": 11974, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 38, "supplier_id": "45318652", "supplier_name": "ТОВ \"МРІЯ 4.5.0\"", "region": "Полтавська область", "total_units": 11672, "total_val_mln": 220.9, "contracts": 42, "uav_units": 11662, "ew_units": 10, "tier": "Tier 1 (>10k шт)"}, {"rank": 39, "supplier_id": "36011986", "supplier_name": "ТОВ \"СПАРК-СЕРВІС\"", "region": "м. Київ", "total_units": 11409, "total_val_mln": 207.5, "contracts": 61, "uav_units": 11409, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 40, "supplier_id": "45235016", "supplier_name": "ТОВ \"ТЕСКО ТЕХНОЛОДЖІ\"", "region": "Запорізька область", "total_units": 11235, "total_val_mln": 233.0, "contracts": 18, "uav_units": 11235, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 41, "supplier_id": "8888888888", "supplier_name": "Оборонний постачальник", "region": "Не вказано", "total_units": 10650, "total_val_mln": 192.2, "contracts": 2, "uav_units": 10646, "ew_units": 4, "tier": "Tier 1 (>10k шт)"}, {"rank": 42, "supplier_id": "43840224", "supplier_name": "ПП \"СЛАВІЯ ГРАТІНГС-АЛЬПІНА ГРАТЕ УКРАЇНА\"", "region": "Львівська область", "total_units": 10419, "total_val_mln": 187.6, "contracts": 65, "uav_units": 10419, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 43, "supplier_id": "45285690", "supplier_name": "ТОВ \"НЬЮ ВЕЙ ЕКС-ПОРТ\"", "region": "м. Київ", "total_units": 10360, "total_val_mln": 192.5, "contracts": 96, "uav_units": 10360, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 44, "supplier_id": "43357113", "supplier_name": "ПП \"ЛЕНДВЕСТ\"", "region": "Львівська область", "total_units": 10264, "total_val_mln": 217.9, "contracts": 47, "uav_units": 10264, "ew_units": 0, "tier": "Tier 1 (>10k шт)"}, {"rank": 1, "supplier_id": "44287456", "supplier_name": "ТОВ \"ТЕХАВТОФАРТ ПІВДЕНЬ\"", "region": "Одеська область", "total_units": 9490, "total_val_mln": 219.6, "contracts": 15, "uav_units": 9429, "ew_units": 61, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 2, "supplier_id": "40973699", "supplier_name": "ТОВ \"ЦЕНТРАЛЬНА КЕРУЮЧА КОМПАНІЯ\"", "region": "Дніпропетровська область", "total_units": 9164, "total_val_mln": 196.2, "contracts": 174, "uav_units": 9161, "ew_units": 3, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 3, "supplier_id": "45231949", "supplier_name": "ТОВ \"Грейт Ентерпрайз\"", "region": "Закарпатська область", "total_units": 9161, "total_val_mln": 172.9, "contracts": 15, "uav_units": 9161, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 4, "supplier_id": "45855410", "supplier_name": "ТОВ «ЕкоМаска»", "region": "Одеська область", "total_units": 8922, "total_val_mln": 160.6, "contracts": 43, "uav_units": 8922, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 5, "supplier_id": "45450787", "supplier_name": "ТОВ «ЛІТАЙ»", "region": "Одеська область", "total_units": 8708, "total_val_mln": 161.3, "contracts": 31, "uav_units": 8708, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 6, "supplier_id": "45271143", "supplier_name": "ТОВ «ЕКОДРОН»", "region": "Одеська область", "total_units": 8548, "total_val_mln": 188.1, "contracts": 137, "uav_units": 8548, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 7, "supplier_id": "CY-DRCOR Приховано", "supplier_name": "Приховано", "region": "Не вказано", "total_units": 8547, "total_val_mln": 153.8, "contracts": 5, "uav_units": 8547, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 8, "supplier_id": "45866820", "supplier_name": "ТОВ \"ТОТАЛОПТ\"", "region": "Не вказано", "total_units": 7979, "total_val_mln": 143.7, "contracts": 13, "uav_units": 7979, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 9, "supplier_id": "34181079", "supplier_name": "ТОВ \"АВІАЦІЙНА ВИРОБНИЧА КОМПАНІЯ \"СКАЕТОН\"", "region": "Не вказано", "total_units": 7976, "total_val_mln": 284.4, "contracts": 6, "uav_units": 7976, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 10, "supplier_id": "40512424", "supplier_name": "ТОВ \"Харків Спецприлад\"", "region": "Харківська область", "total_units": 7798, "total_val_mln": 162.5, "contracts": 141, "uav_units": 7789, "ew_units": 9, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 11, "supplier_id": "30019335", "supplier_name": "ДОЧІРНЄ ПІДПРИЄМСТВО ДЕРЖАВНОЇ КОМПАНІЇ \"УКРСПЕЦЕКСПОРТ\" - ДЕРЖАВНЕ ГОСПРОЗРАХУНКОВЕ ЗОВНІШНЬОТОРГІВЕЛЬНЕ ПІДПРИЄМСТВО \"СПЕЦТЕХНОЕКСПОРТ\"", "region": "м. Київ", "total_units": 7612, "total_val_mln": 146.7, "contracts": 15, "uav_units": 7555, "ew_units": 57, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 12, "supplier_id": "TR-MERSIS Приховано", "supplier_name": "Приховано", "region": "Не вказано", "total_units": 7605, "total_val_mln": 167.3, "contracts": 5, "uav_units": 7605, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 13, "supplier_id": "41234490", "supplier_name": "ТОВ \"КЛЕВЕ ЮА\"", "region": "Київська область", "total_units": 7467, "total_val_mln": 182.2, "contracts": 113, "uav_units": 7467, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 14, "supplier_id": "22402331", "supplier_name": "ТОВ Фірма \"Мінерал-Плюс\"", "region": "Львівська область", "total_units": 7260, "total_val_mln": 166.6, "contracts": 13, "uav_units": 7259, "ew_units": 1, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 15, "supplier_id": "32655785", "supplier_name": "ТОВ \"ФЛАЙ ІТ\"", "region": "м. Київ", "total_units": 7133, "total_val_mln": 130.7, "contracts": 30, "uav_units": 7133, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 16, "supplier_id": "45304681", "supplier_name": "ТОВ \"ГЛОБАЛ МАРК\"", "region": "Київська область", "total_units": 7089, "total_val_mln": 133.3, "contracts": 52, "uav_units": 7089, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 17, "supplier_id": "45020636", "supplier_name": "ТОВ \"Айр Скайлайн\"", "region": "Запорізька область", "total_units": 6746, "total_val_mln": 130.5, "contracts": 13, "uav_units": 6746, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 18, "supplier_id": "40293555", "supplier_name": "ТОВ «ЛЕОПОЛІС КОМП’ЮТЕР»", "region": "Львівська область", "total_units": 6533, "total_val_mln": 144.7, "contracts": 55, "uav_units": 6532, "ew_units": 1, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 19, "supplier_id": "23310163", "supplier_name": "ПРИВАТНА ФІРМА ''ДУКАТ''", "region": "Рівненська область", "total_units": 6356, "total_val_mln": 114.4, "contracts": 17, "uav_units": 6356, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 20, "supplier_id": "44821181", "supplier_name": "ТОВ \"КОНКОРД-22\"", "region": "Київська область", "total_units": 6346, "total_val_mln": 148.0, "contracts": 4, "uav_units": 6346, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 21, "supplier_id": "44912210", "supplier_name": "ТОВ \"ІНКОС ІНДАСТРІ\"", "region": "м. Київ", "total_units": 6131, "total_val_mln": 150.1, "contracts": 127, "uav_units": 6131, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 22, "supplier_id": "44811971", "supplier_name": "ТОВ \"ТОРГОВИЙ ДІМ \"ТЕРРА ГРУП\"", "region": "Хмельницька область", "total_units": 5895, "total_val_mln": 146.2, "contracts": 84, "uav_units": 5895, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 23, "supplier_id": "43587445", "supplier_name": "ТОВ \"КРП-3\"", "region": "Дніпропетровська область", "total_units": 5853, "total_val_mln": 204.9, "contracts": 4, "uav_units": 5853, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 24, "supplier_id": "40130713", "supplier_name": "ТОВ \"ЕН ДЖІ ПОН\"", "region": "м. Київ", "total_units": 5750, "total_val_mln": 135.2, "contracts": 74, "uav_units": 5750, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 25, "supplier_id": "45659584", "supplier_name": "ТОВ \"ПТАШКА ДРОНС\"", "region": "Київська область", "total_units": 5342, "total_val_mln": 98.3, "contracts": 14, "uav_units": 5338, "ew_units": 4, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 26, "supplier_id": "44975160", "supplier_name": "ТОВ ДСТ ЕКСІМ", "region": "Київська область", "total_units": 5270, "total_val_mln": 290.6, "contracts": 21, "uav_units": 3828, "ew_units": 1442, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 27, "supplier_id": "CY-DRCOR CY-HE445936", "supplier_name": "ТОВ \"Pantheon Defense\"", "region": "Не вказано", "total_units": 5108, "total_val_mln": 91.9, "contracts": 5, "uav_units": 5108, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 28, "supplier_id": "40084992", "supplier_name": "ТОВ ГОУФІТ", "region": "м. Київ", "total_units": 4909, "total_val_mln": 88.4, "contracts": 17, "uav_units": 4909, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 29, "supplier_id": "44869333", "supplier_name": "ТОВ \"ЕР СІ ДІРЕКШН\"", "region": "Не вказано", "total_units": 4623, "total_val_mln": 114.4, "contracts": 29, "uav_units": 4623, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 30, "supplier_id": "45836471", "supplier_name": "ТОВ \"ПОВІТРЯНИЙ ОГЛЯД\"", "region": "Хмельницька область", "total_units": 4403, "total_val_mln": 79.3, "contracts": 17, "uav_units": 4403, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 31, "supplier_id": "43094301", "supplier_name": "ТОВ \"КВАДРО.ЮА\"", "region": "Київська область", "total_units": 4275, "total_val_mln": 119.9, "contracts": 79, "uav_units": 4275, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 32, "supplier_id": "35861983", "supplier_name": "ТОВ \"СЕВА-ТРЕЙД\"", "region": "Дніпропетровська область", "total_units": 4273, "total_val_mln": 105.1, "contracts": 12, "uav_units": 4273, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 33, "supplier_id": "45258955", "supplier_name": "ТОВ \"ТОРГПОСТАЧ ПЛЮС\"", "region": "Харківська область", "total_units": 4246, "total_val_mln": 84.6, "contracts": 58, "uav_units": 4246, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 34, "supplier_id": "45477636", "supplier_name": "ТОВ «НАУКОВО-ВИРОБНИЧЕ КОНСТРУКТОРСЬКЕ БЮРО «СТАРТОВІ АКСЕЛЕРАТОРНІ ТЕХНОЛОГІЇ»", "region": "Не вказано", "total_units": 4202, "total_val_mln": 75.6, "contracts": 1, "uav_units": 4202, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 35, "supplier_id": "45070942", "supplier_name": "ТОВ \"СМ КВІН\"", "region": "Не вказано", "total_units": 4196, "total_val_mln": 85.0, "contracts": 45, "uav_units": 4196, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 36, "supplier_id": "44825049", "supplier_name": "ТОВ \"ГУРЗУФ ДЕФЕНС\"", "region": "Не вказано", "total_units": 4189, "total_val_mln": 78.8, "contracts": 11, "uav_units": 4189, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 37, "supplier_id": "00000000", "supplier_name": "00000", "region": "Не вказано", "total_units": 4078, "total_val_mln": 101.1, "contracts": 34, "uav_units": 3841, "ew_units": 237, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 38, "supplier_id": "45275347", "supplier_name": "Товариство з обмеженою відповід­альністю «Ті ай бі»", "region": "Харківська область", "total_units": 4022, "total_val_mln": 104.3, "contracts": 92, "uav_units": 4022, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 39, "supplier_id": "43276511", "supplier_name": "ТОВ \"НВО \"ЄВРО ТЕХНО ТРЕЙД УКРАЇНА\"", "region": "Львівська область", "total_units": 3970, "total_val_mln": 72.0, "contracts": 11, "uav_units": 3970, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 40, "supplier_id": "34451322", "supplier_name": "ТОВ \"ТЕХМАС\"", "region": "Сумська область", "total_units": 3924, "total_val_mln": 77.1, "contracts": 9, "uav_units": 3924, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 41, "supplier_id": "34537320", "supplier_name": "ТОВ Хелітрейнінг Україна", "region": "Полтавська область", "total_units": 3823, "total_val_mln": 85.6, "contracts": 6, "uav_units": 3823, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 42, "supplier_id": "42293604", "supplier_name": "ТОВ \"ГОЛОВНА МАНУФАКТУРА\"", "region": "Київська область", "total_units": 3784, "total_val_mln": 127.5, "contracts": 75, "uav_units": 3784, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 43, "supplier_id": "43597474", "supplier_name": "ТОВ \"К-ИТ\"", "region": "Одеська область", "total_units": 3782, "total_val_mln": 72.6, "contracts": 35, "uav_units": 3782, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 44, "supplier_id": "45331799", "supplier_name": "ТОВ “Айрон Беллі”", "region": "Не вказано", "total_units": 3752, "total_val_mln": 67.5, "contracts": 1, "uav_units": 3752, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 45, "supplier_id": "42957129", "supplier_name": "ТОВ \"ТЕХ.ІНВЕСТ.ДИСТРИБ'ЮШН\"", "region": "м. Київ", "total_units": 3749, "total_val_mln": 67.5, "contracts": 4, "uav_units": 3749, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 46, "supplier_id": "41112077", "supplier_name": "ТОВ \"КВЕРТУС\"", "region": "Київська область", "total_units": 3749, "total_val_mln": 611.1, "contracts": 352, "uav_units": 0, "ew_units": 3749, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 47, "supplier_id": "45178875", "supplier_name": "ТОВ \"Київські квадрокоптери\"", "region": "Київська область", "total_units": 3729, "total_val_mln": 69.5, "contracts": 84, "uav_units": 3729, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 48, "supplier_id": "43672760", "supplier_name": "ТОВ ЖТК", "region": "Житомирська область", "total_units": 3624, "total_val_mln": 79.7, "contracts": 64, "uav_units": 3624, "ew_units": 0, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 49, "supplier_id": "44854002", "supplier_name": "ТОВ \"ВІЕНЕРДЖІ\"", "region": "м. Київ", "total_units": 3540, "total_val_mln": 91.4, "contracts": 58, "uav_units": 3448, "ew_units": 92, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 50, "supplier_id": "36070491", "supplier_name": "ТОВ ФСК Будінвест", "region": "м. Київ", "total_units": 3425, "total_val_mln": 94.8, "contracts": 38, "uav_units": 3347, "ew_units": 78, "tier": "Tier 2 (1k-10k шт)"}, {"rank": 1, "supplier_id": "45567623", "supplier_name": "ТОВ \"ДІДЖИТАЛ ТЕХ\"", "region": "Харківська область", "total_units": 983, "total_val_mln": 18.9, "contracts": 18, "uav_units": 983, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 2, "supplier_id": "45057523", "supplier_name": "ТОВ «ЛАЙНАП ТЕХ»", "region": "Харківська область", "total_units": 981, "total_val_mln": 18.7, "contracts": 13, "uav_units": 981, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 3, "supplier_id": "45135962", "supplier_name": "ТОВ \"МАКЕЛСАН СЕРВІС\"", "region": "м. Київ", "total_units": 980, "total_val_mln": 21.6, "contracts": 11, "uav_units": 980, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 4, "supplier_id": "45172433", "supplier_name": "ТОВ \"ЗАГРАВА МТ\"", "region": "Не вказано", "total_units": 971, "total_val_mln": 19.5, "contracts": 19, "uav_units": 971, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 5, "supplier_id": "45288659", "supplier_name": "ТОВ \"ІНТЕЛ АВІА", "region": "Вінницька область", "total_units": 954, "total_val_mln": 21.0, "contracts": 6, "uav_units": 954, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 6, "supplier_id": "45027504", "supplier_name": "ТОВ \"ЗЛІ ПТАХИ\"", "region": "Миколаївська область", "total_units": 944, "total_val_mln": 18.2, "contracts": 6, "uav_units": 944, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 7, "supplier_id": "45887861", "supplier_name": "ТОВ \"ГЛОБАЛЬНІ ТЕХНОЛОГІЇ\"", "region": "Не вказано", "total_units": 939, "total_val_mln": 16.9, "contracts": 6, "uav_units": 939, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 8, "supplier_id": "39910269", "supplier_name": "ТОВ \"КСМ ЮА\"", "region": "Вінницька область", "total_units": 932, "total_val_mln": 20.1, "contracts": 8, "uav_units": 932, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 9, "supplier_id": "45268476", "supplier_name": "ТОВ \"ФЛАЙ СІСТЕМС\"", "region": "м. Київ", "total_units": 916, "total_val_mln": 16.5, "contracts": 4, "uav_units": 916, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 10, "supplier_id": "45351684", "supplier_name": "ТОВ \"ЮТ КОМПАНІ\"", "region": "Дніпропетровська область", "total_units": 908, "total_val_mln": 18.1, "contracts": 14, "uav_units": 908, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 11, "supplier_id": "22522986", "supplier_name": "ТОВ \"САЙБЕРФ\"", "region": "Полтавська область", "total_units": 906, "total_val_mln": 19.9, "contracts": 1, "uav_units": 906, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 12, "supplier_id": "36659992", "supplier_name": "ТОВ \"ХОЛДИНГОВА КОМПАНІЯ \"УКРБУД\"", "region": "Львівська область", "total_units": 905, "total_val_mln": 18.6, "contracts": 19, "uav_units": 903, "ew_units": 2, "tier": "Tier 3 (<1k шт)"}, {"rank": 13, "supplier_id": "45107139", "supplier_name": "ТОВ \"ЕВЕРГЛАЙДС\"", "region": "Дніпропетровська область", "total_units": 898, "total_val_mln": 19.1, "contracts": 14, "uav_units": 898, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 14, "supplier_id": "45646690", "supplier_name": "ТОВ \"Л7 ІНДАСТРІ\"", "region": "Київська область", "total_units": 872, "total_val_mln": 112.6, "contracts": 59, "uav_units": 0, "ew_units": 872, "tier": "Tier 3 (<1k шт)"}, {"rank": 15, "supplier_id": "43956647", "supplier_name": "ТОВ \"ДЕФЕНС-Т\"", "region": "Не вказано", "total_units": 867, "total_val_mln": 15.6, "contracts": 1, "uav_units": 867, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 16, "supplier_id": "44820078", "supplier_name": "ТОВ \"ПРОФРІЕЛТІ СЕРВІС\"", "region": "м. Київ", "total_units": 860, "total_val_mln": 17.0, "contracts": 5, "uav_units": 860, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 17, "supplier_id": "45164993", "supplier_name": "ТОВ \"МАГУРА ВИРОБНИЧО-ПРОМИСЛОВА КОМПАНІЯ\"", "region": "Київська область", "total_units": 829, "total_val_mln": 15.7, "contracts": 19, "uav_units": 822, "ew_units": 7, "tier": "Tier 3 (<1k шт)"}, {"rank": 18, "supplier_id": "45250390", "supplier_name": "ТОВ \"НЕБО ДРОН\"", "region": "Одеська область", "total_units": 822, "total_val_mln": 14.8, "contracts": 1, "uav_units": 822, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 19, "supplier_id": "45850571", "supplier_name": "ТОВ \"ЕкспоСкай\"", "region": "Харківська область", "total_units": 815, "total_val_mln": 14.7, "contracts": 6, "uav_units": 815, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 20, "supplier_id": "44675139", "supplier_name": "ТОВ \"СПАРРОУ АВІА\"", "region": "Житомирська область", "total_units": 813, "total_val_mln": 16.5, "contracts": 16, "uav_units": 812, "ew_units": 1, "tier": "Tier 3 (<1k шт)"}, {"rank": 21, "supplier_id": "44907085", "supplier_name": "ТОВ \"ПНТ УКРАЇНА\"", "region": "м. Київ", "total_units": 811, "total_val_mln": 21.6, "contracts": 22, "uav_units": 811, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 22, "supplier_id": "45120411", "supplier_name": "ТОВ \"БІТА ТЕХНОЛОДЖІС\"", "region": "Не вказано", "total_units": 809, "total_val_mln": 14.7, "contracts": 3, "uav_units": 809, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 23, "supplier_id": "39459829", "supplier_name": "ТОВ «ІНКОС ЛАЙН»", "region": "м. Київ", "total_units": 808, "total_val_mln": 17.8, "contracts": 4, "uav_units": 808, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 24, "supplier_id": "44744495", "supplier_name": "ТОВ НВК \"Скай Ассист\"", "region": "м. Київ", "total_units": 806, "total_val_mln": 16.8, "contracts": 9, "uav_units": 806, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 25, "supplier_id": "31355139", "supplier_name": "ТОВ \"Проксімус\"", "region": "м. Київ", "total_units": 794, "total_val_mln": 113.8, "contracts": 6, "uav_units": 0, "ew_units": 794, "tier": "Tier 3 (<1k шт)"}, {"rank": 26, "supplier_id": "30488631", "supplier_name": "ТОВ \"ТРИТЕЛ\"", "region": "м. Київ", "total_units": 788, "total_val_mln": 128.2, "contracts": 5, "uav_units": 0, "ew_units": 788, "tier": "Tier 3 (<1k шт)"}, {"rank": 27, "supplier_id": "31359353", "supplier_name": "ТОВ \"ЛІНТУ\"", "region": "Харківська область", "total_units": 783, "total_val_mln": 14.1, "contracts": 4, "uav_units": 783, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 28, "supplier_id": "45128337", "supplier_name": "ТОВ \"ВК ЮКРЕЙН ДЕФЕНС СІСТЕМС\"", "region": "Харківська область", "total_units": 776, "total_val_mln": 21.0, "contracts": 2, "uav_units": 748, "ew_units": 28, "tier": "Tier 3 (<1k шт)"}, {"rank": 29, "supplier_id": "45892080", "supplier_name": "ТОВ \"КС-ТЕХ\"", "region": "Харківська область", "total_units": 776, "total_val_mln": 14.0, "contracts": 2, "uav_units": 776, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 30, "supplier_id": "45242421", "supplier_name": "ТОВ \"Каспер Інк\"", "region": "Львівська область", "total_units": 759, "total_val_mln": 14.2, "contracts": 9, "uav_units": 759, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 31, "supplier_id": "45364583", "supplier_name": "ТОВ “БУНТАР АЕРОСПЕЙС”", "region": "Не вказано", "total_units": 754, "total_val_mln": 13.6, "contracts": 1, "uav_units": 754, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 32, "supplier_id": "33563255", "supplier_name": "ТОВ \"ДСК-ДНІПРО\"", "region": "Дніпропетровська область", "total_units": 750, "total_val_mln": 13.6, "contracts": 18, "uav_units": 749, "ew_units": 1, "tier": "Tier 3 (<1k шт)"}, {"rank": 33, "supplier_id": "44732757", "supplier_name": "ТОВ \"ВІЙ АДВАНСД АЕРІАЛ СІСТЕМС\"", "region": "Тернопільська область", "total_units": 741, "total_val_mln": 14.9, "contracts": 12, "uav_units": 739, "ew_units": 2, "tier": "Tier 3 (<1k шт)"}, {"rank": 34, "supplier_id": "45514646", "supplier_name": "ТОВ \"ШЕРШ\"", "region": "Запорізька область", "total_units": 739, "total_val_mln": 14.0, "contracts": 4, "uav_units": 739, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 35, "supplier_id": "42956366", "supplier_name": "ТОВ \"ЗЕЛЕН ДЕВЕЛОПМЕНТ\"", "region": "Львівська область", "total_units": 738, "total_val_mln": 13.4, "contracts": 12, "uav_units": 738, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 36, "supplier_id": "2985610471", "supplier_name": "ФОП Костін С.В.", "region": "Не вказано", "total_units": 727, "total_val_mln": 16.0, "contracts": 1, "uav_units": 727, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 37, "supplier_id": "41174044", "supplier_name": "ТОВ \"СМАРТ БЕРДС\"", "region": "Дніпропетровська область", "total_units": 725, "total_val_mln": 109.6, "contracts": 101, "uav_units": 0, "ew_units": 725, "tier": "Tier 3 (<1k шт)"}, {"rank": 38, "supplier_id": "39950584", "supplier_name": "ТОВ «АМРІТА КОМПЛЕКСНІ РІШЕННЯ»", "region": "Київська область", "total_units": 714, "total_val_mln": 66.7, "contracts": 7, "uav_units": 351, "ew_units": 363, "tier": "Tier 3 (<1k шт)"}, {"rank": 39, "supplier_id": "45349240", "supplier_name": "ТОВ \"ДронХаб\"", "region": "Одеська область", "total_units": 708, "total_val_mln": 86.7, "contracts": 162, "uav_units": 95, "ew_units": 613, "tier": "Tier 3 (<1k шт)"}, {"rank": 40, "supplier_id": "44902946", "supplier_name": "ТОВ \"СТАР АГРОДРОН\"", "region": "Хмельницька область", "total_units": 700, "total_val_mln": 15.8, "contracts": 37, "uav_units": 700, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 41, "supplier_id": "41090368", "supplier_name": "ТОВ «ВІКТОН УКРАЇНА»", "region": "Не вказано", "total_units": 673, "total_val_mln": 15.1, "contracts": 10, "uav_units": 670, "ew_units": 3, "tier": "Tier 3 (<1k шт)"}, {"rank": 42, "supplier_id": "46076547", "supplier_name": "ТОВ \"СІРІУС НЕКСТ\"", "region": "Львівська область", "total_units": 660, "total_val_mln": 11.9, "contracts": 5, "uav_units": 660, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 43, "supplier_id": "3513205536", "supplier_name": "ФОП \"БЕЧКАЛО СВЯТОСЛАВ ВОЛОДИМИРОВИЧ\"", "region": "Львівська область", "total_units": 657, "total_val_mln": 11.8, "contracts": 28, "uav_units": 657, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 44, "supplier_id": "45043589", "supplier_name": "ТОВ \"ФЛЕШ ТЕХ\"", "region": "Не вказано", "total_units": 652, "total_val_mln": 16.5, "contracts": 4, "uav_units": 652, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 45, "supplier_id": "44687364", "supplier_name": "ТОВ \"СКАЙБРО\"", "region": "м. Київ", "total_units": 650, "total_val_mln": 11.7, "contracts": 3, "uav_units": 650, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 46, "supplier_id": "45160543", "supplier_name": "ТОВ \"ФРОНТЛАЙН РОБОТІКС\"", "region": "м. Київ", "total_units": 643, "total_val_mln": 11.6, "contracts": 8, "uav_units": 643, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 47, "supplier_id": "45467591", "supplier_name": "ТОВ \"ЛІ ОН КОМПАНІ\"", "region": "Не вказано", "total_units": 641, "total_val_mln": 14.1, "contracts": 11, "uav_units": 641, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 48, "supplier_id": "35877071", "supplier_name": "ТОВ \"СТОУН-ТРЕЙД\"", "region": "Київська область", "total_units": 640, "total_val_mln": 12.7, "contracts": 32, "uav_units": 640, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}, {"rank": 49, "supplier_id": "41087664", "supplier_name": "ТОВ \"КОНСТРУКТОРСЬКЕ БЮРО \"ЛОГІКА\"", "region": "Київська область", "total_units": 633, "total_val_mln": 86.3, "contracts": 43, "uav_units": 0, "ew_units": 633, "tier": "Tier 3 (<1k шт)"}, {"rank": 50, "supplier_id": "45226064", "supplier_name": "ТОВ \"ТЕНЕБРІС\"", "region": "м. Київ", "total_units": 628, "total_val_mln": 11.3, "contracts": 3, "uav_units": 628, "ew_units": 0, "tier": "Tier 3 (<1k шт)"}]};
+
+        // RENDER CHARTS
+        function initCharts() {
+            // 1. Throughput Chart
+            const ctx1 = document.getElementById('chartThroughput').getContext('2d');
+            const years = [2022, 2023, 2024, 2025];
+            const uavMap = {};
+            const ewMap = {};
+            M.rq1_throughput.yearly_uav.forEach(r => uavMap[r.year] = r.units / 1000);
+            M.rq1_throughput.yearly_ew.forEach(r => ewMap[r.year] = r.units / 1000);
+
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['2022', '2023', '2024', '2025'],
+                    datasets: [
+                        {
+                            label: 'БпЛА та Дрони (тис. шт)',
+                            data: years.map(y => uavMap[y] || 0),
+                            backgroundColor: '#0284C7',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'РЕБ та Тактичні (тис. шт)',
+                            data: years.map(y => ewMap[y] || 0),
+                            backgroundColor: '#D97706',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, grid: { color: '#E2E8F0' } }
+                    }
+                }
+            });
+
+            // 2. Rhythmicity Chart
+            const ctx2 = document.getElementById('chartRhythmicity').getContext('2d');
+            const mData = M.rq2_rhythmicity.monthly_seasonality;
+            const mLabels = ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'];
+            const mVals = mData.map(r => r.val_bln);
+            const mColors = mVals.map((v, i) => i === 11 ? '#E11D48' : (i >= 9 ? '#D97706' : '#0284C7'));
+
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: mLabels,
+                    datasets: [{
+                        label: 'Сума контрактації (млрд грн)',
+                        data: mVals,
+                        backgroundColor: mColors,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: '#E2E8F0' } }
+                    }
+                }
+            });
+
+            // 3. Tiers Stratification Chart
+            const ctx3 = document.getElementById('chartTiers').getContext('2d');
+            const tData = M.rq3_tiering.tier_summary;
+            const tLabels = tData.map(r => r.tier.split('(')[0].trim());
+            const tUnits = tData.map(r => r.units_pct);
+            const tVal = tData.map(r => r.val_pct);
+
+            new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: tLabels,
+                    datasets: [
+                        {
+                            label: 'Частка у фізичному випуску (%)',
+                            data: tUnits,
+                            backgroundColor: '#0284C7',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Частка у фінансуванні (%)',
+                            data: tVal,
+                            backgroundColor: '#0891B2',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { grid: { color: '#E2E8F0' }, max: 90 }
+                    }
+                }
+            });
+
+            // 4. Bottlenecks Chart
+            const ctx4 = document.getElementById('chartBottlenecks').getContext('2d');
+            const bData = M.rq4_bottlenecks.taxonomy;
+            const bLabels = bData.map(r => r.stage.split('(')[0].replace(/\d+\.\s*/, '').trim());
+            const bWeights = bData.map(r => r.delay_weight_pct);
+
+            new Chart(ctx4, {
+                type: 'doughnut',
+                data: {
+                    labels: bLabels,
+                    datasets: [{
+                        data: bWeights,
+                        backgroundColor: ['#E11D48', '#0284C7', '#0891B2', '#D97706'],
+                        borderWidth: 2,
+                        borderColor: '#FFFFFF'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        // SIMULATOR LOGIC
+        function updateSimulator() {
+            const shifts = parseInt(document.getElementById('inputShifts').value);
+            const workstations = parseInt(document.getElementById('inputWorkstations').value);
+            const takt = parseInt(document.getElementById('inputTakt').value);
+            const buffer = parseInt(document.getElementById('inputBuffer').value);
+            const scrap = parseFloat(document.getElementById('inputScrap').value);
+
+            // Update Label Displays
+            document.getElementById('valShifts').innerText = `${shifts} ${shifts === 1 ? 'зміна (8 год)' : (shifts === 2 ? 'зміни (16 год)' : 'зміни (24 год безперервно)')}`;
+            document.getElementById('valWorkstations').innerText = `${workstations} постів`;
+            document.getElementById('valTakt').innerText = `${takt} хв / борт`;
+            document.getElementById('valBuffer').innerText = `${buffer} днів запасу`;
+            document.getElementById('valScrap').innerText = `${scrap.toFixed(1)}%`;
+
+            // Core Calculations
+            const workingDays = 22;
+            const shiftHours = shifts * 8;
+            const monthlyWorkMinutes = workingDays * shiftHours * 60 * workstations;
+            const grossMonthlyUnits = monthlyWorkMinutes / takt;
+
+            // Supply Chain starvation penalty if buffer is less than 15 days
+            let supplyFactor = 1.0;
+            if (buffer < 15) {
+                supplyFactor = 0.65 + 0.35 * (buffer / 15.0);
+            }
+
+            const netMonthlyUnits = Math.round(grossMonthlyUnits * (1 - scrap / 100) * supplyFactor);
+            const annualUnits = Math.round(netMonthlyUnits * 12);
+            const lineEfficiency = (supplyFactor * (1 - scrap / 100) * 100).toFixed(1);
+            const valueCapacityBln = (netMonthlyUnits * 12 * 18000 / 1e9).toFixed(2);
+
+            document.getElementById('simMonthlyUnits').innerText = netMonthlyUnits.toLocaleString() + ' шт';
+            document.getElementById('simAnnualUnits').innerText = (annualUnits / 1000).toFixed(1) + 'k шт';
+            document.getElementById('simEfficiency').innerText = lineEfficiency + '%';
+            document.getElementById('simValueCapacity').innerText = valueCapacityBln + ' млрд грн';
+
+            // Bottleneck diagnostics
+            const bMsg = document.getElementById('simBottleneckMessage');
+            if (buffer < 15) {
+                bMsg.style.borderLeftColor = 'var(--accent-red)';
+                bMsg.innerHTML = `<strong>⚠️ Критичне вузьке місце: Дефіцит компонентів!</strong> Безпековий буфер (${buffer} дн) нижчий за P90 цикл доставки (+14.5 дн). Конвеєр втрачає ${((1 - supplyFactor) * 100).toFixed(0)}% продуктивності через простій монтажників.`;
+            } else if (scrap > 4.0) {
+                bMsg.style.borderLeftColor = 'var(--accent-amber)';
+                bMsg.innerHTML = `<strong>⚠️ Вузьке місце: Підвищений цеховий брак (${scrap.toFixed(1)}%)!</strong> Необхідно запровадити автоматизований вхідний оптичний контроль SMD-паяння для зменшення втрат.`;
+            } else if (takt > 40) {
+                bMsg.style.borderLeftColor = 'var(--accent-cyan)';
+                bMsg.innerHTML = `<strong>ℹ️ Резерв оптимізації: Тривалий такт (${takt} хв)!</strong> Розбиття монтажу на дрібніші операції дозволить скоротити такт до 20-25 хв та збільшити випуск на +40%.`;
+            } else {
+                bMsg.style.borderLeftColor = 'var(--accent-green)';
+                bMsg.innerHTML = `<strong>✅ Конвеєр повністю оптимізовано та збалансовано!</strong> Забезпечено безперебійне постачання компонентів (${buffer} дн), мінімальний брак (${scrap.toFixed(1)}%) та максимальний темп випуску.`;
+            }
+        }
+
+        // TABLE LOGIC
+        let currentTierFilter = 'Tier 1';
+        function populateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            const search = document.getElementById('tableSearch').value.toLowerCase();
+            let count = 0;
+
+            M.top_50_manufacturers.forEach(r => {
+                if (!r.tier.includes(currentTierFilter)) return;
+                if (search && !r.supplier_name.toLowerCase().includes(search) && !r.supplier_id.includes(search)) return;
+
+                count++;
+                const tr = document.createElement('tr');
+                const tierClass = r.tier.includes('Tier 1') ? 'tp-tier1' : (r.tier.includes('Tier 2') ? 'tp-tier2' : 'tp-tier3');
+                tr.innerHTML = `
+                    <td><strong>${r.rank}</strong></td>
+                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">${r.supplier_id}</td>
+                    <td><strong>${r.supplier_name}</strong></td>
+                    <td>${r.region}</td>
+                    <td><strong>${r.total_units.toLocaleString()}</strong></td>
+                    <td>${r.uav_units.toLocaleString()}</td>
+                    <td>${r.ew_units.toLocaleString()}</td>
+                    <td>${r.total_val_mln.toLocaleString()}</td>
+                    <td>${r.contracts}</td>
+                    <td><span class="tier-pill ${tierClass}">${r.tier}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (count === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="10" style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 13px;">
+                    Не знайдено виробників за вибраним фільтром або пошуковим запитом.
+                </td>`;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function filterTier(tier, btn) {
+            currentTierFilter = tier;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) {
+                btn.classList.add('active');
+            }
+            populateTable();
+        }
+
+        function searchTable() {
+            populateTable();
+        }
+
+        // EVENT LISTENERS
+        ['inputShifts', 'inputWorkstations', 'inputTakt', 'inputBuffer', 'inputScrap'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateSimulator);
+        });
+
+        window.onload = function() {
+            initCharts();
+            updateSimulator();
+            populateTable();
+        };
+    </script>
+</body>
+</html>
